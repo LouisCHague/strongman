@@ -205,11 +205,12 @@ def PRLiftRecords(strongList):
     # Dataframe for accumulating information
     combinedDF = pd.DataFrame(columns=['Name'])
     for strongman in strongList:
+        print(strongman)
         recorddf = MakePRDataframe(strongman)
         combinedDF = pd.concat([combinedDF, recorddf], ignore_index=True)
     #print(combinedDF)
     # Save to CSV
-    file_name = 'PRLiftRecords.csv'
+    file_name = 'PRLiftRecords_4.csv'
     combinedDF.to_csv(file_name, index=False)
 
 def OverallPodium(strongList):
@@ -242,14 +243,61 @@ def EventPodium(strongList):
     combinedDF.to_csv(file_name, index=False)
 
 # Test 3
-names = [
-    'Brian Shaw',
-    'Mariusz Pudzianowski',
-    'Eddie Hall',
-]
+# names = [
+#     "Glenn Ross",
+#     "Mark Felix",
+#     "Luke Stoltman",
+#     "Rauno Heinla",
+#     "Laurence Shahlaei",
+#     "Evan Singleton",
+#     "Trey Mitchell",
+#     "Adam Bishop",
+#     "Rob Kearney",
+#     "Gavin Bilton",
+#     "Kevin Faires",
+#     "Mateusz Kieliszkowski",
+#     "Konstantine Janashia",
+#     "Iron Biby",
+#     "Bobby Thompson",
+#     "Svend Karlsen",
+#     "Mariusz Pudzianowski",
+#     "Vasyl Virastyuk",
+#     "Phil Pfister",
+#     "Žydrūnas Savickas",
+#     "Brian Shaw",
+#     "Eddie Hall",
+#     "Hafthór Júlíus Björnsson",
+#     "Martins Licis",
+#     "Oleksii Novikov",
+#     "Tom Stoltman",
+#     "Mitchell Hooper"
+# ]
+
+names = []
+
+# BATCH 1
+# "Pavlo Kordiyaka", "Tom Stoltman", "Bobby Thompson", "Konstantine Janashia", "Pa O'Dwyer", 
+#     "Eddie Williams", "Oleksii Novikov", "Luke Stoltman", "Gavin Bilton", "Thomas Evans", 
+#     "Kristján Jón Haraldsson", "Fadi El Masri", "Mitchell Hooper", "Mathew Ragg", "Aivars Šmaukstelis", 
+#     "Mateusz Kieliszkowski", "Graham Hicks", "Spenser Remick", "Jaco Schoonwinkel", "Brian Shaw", 
+#     "Rauno Heinla", "Adam Bishop", "Kevin Faires", "Gabriel Rhéaume", "Trey Mitchell", "Evan Singleton", 
+#     "Eyþór Ingólfsson Melsteð"
+# BATCH 2
+# "Mark Felix", "Paul Smith", "Travis Ortmayer", "Jean-François Caron", 
+#     "Martin Forsmark", "Robert Oberst", "Mateusz Baron", "Hafþór Júlíus Björnsson", "Dimitar Savatinov", 
+#     "Rafal Kobylarz", "Josh Thigpen", "Akos Nagy", "Žydrūnas Savickas", "Mikhail Shivlyakov", 
+#     "Nick Best", "David Nystrom", "Benedikt Magnússon", "Laurence Shahlaei", "Jerry Pritchett", 
+#     "Dainis Zageris", "Krzysztof Radzikowski", "Gerhard Van Staden", "Mike Burke"
+# BATCH 3
+#     "Eddie Hall", "Matjaž Belšak", "Grzegorz Szymanski", "Mike Caruso", "Ole Martin Hansen", 
+#     "Luke Richardson", "Iron Biby", "Svend Karlsen", "Mariusz Pudzianowski", "Vasyl Virastyuk", 
+#     "Phil Pfister", "Martins Licis", "Glenn Ross", "Rob Kearney","Mikhail Koklyaev", "Robert Frampton",
+#     "Jarek Dymek"
 
 # Pull Data
 # Use the functions individually
-#PRLiftRecords(names)
+# Need to add error correction when there are issues with HTML 'Show more...'
+
+PRLiftRecords(names)
 #OverallPodium(names)
 #EventPodium(names)
