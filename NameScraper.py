@@ -7,15 +7,8 @@ my knowledge of strongman for the sample size/increase the sample size'''
 # Imports
 from selenium import webdriver
 from selenium.webdriver.edge.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 import pandas as pd
-import re
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support.ui import WebDriverWait as wait
-from selenium.webdriver.support import expected_conditions as EC
-import time
-from bs4 import BeautifulSoup
+import csv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -43,10 +36,51 @@ dropdown = WebDriverWait(driver, 10).until(
 # Interact with dropdown
 select = Select(dropdown)
 
-# Loop through the countries in the dropdown
-# Click the apply filter button
-# Loop through the names, if the name has a date of birth record the name 
-for country in select.options:
-    if country.text != "Unknown":
-        select.select_by_visible_text(country.text)
-        time.sleep(1)
+# Open a CSV file to store the results
+with open('athletes.csv', mode='w', newline='', encoding='utf-8') as file:
+    writer = csv.writer(file)
+    writer.writerow(['Name'])  
+
+    for country in select.options:
+        if country.text != "Unknown":
+            select.select_by_visible_text(country.text)
+            time.sleep(2)
+            
+            # Locate and click the 'Apply Filter' button
+            buttonLocator = (By.XPATH, '/html/body/app-root/div[5]/app-statistics/div[2]/div[3]/div/div/app-profile-lists/form/button')
+            filterButton = WebDriverWait(driver, 10).until(EC.element_to_be_clickable(buttonLocator))
+            filterButton.click()
+            time.sleep(4) 
+            
+            print(f'\nFiltered Country: {country.text}')
+            # HARD CODED, FROM 1 TO LARGE NUMBER
+            for i in range(1, 10000):  
+                try:
+                    athleteName = driver.find_element(By.XPATH, f'/html/body/app-root/div[5]/app-statistics/div[2]/div[3]/div/div/app-profile-lists/div[7]/table/tbody/tr[{i}]/td[2]/span').text
+                except:
+                    # We have either ran out of names or there are no names
+                    print(f'Complete Records for: {country.text}')
+                    # Move to next country
+                    break  
+                
+                try:
+                    # All athletes should have a date of birth
+                    athleteDOB = driver.find_element(By.XPATH, f'/html/body/app-root/div[5]/app-statistics/div[2]/div[3]/div/div/app-profile-lists/div[7]/table/tbody/tr[{i}]/td[4]').text
+                    
+                    # Athletes without a date of birth most likely don't have records
+                    if '(missing)' not in athleteDOB.split():
+                        print(f'Athlete Name: {athleteName}')
+                        print(f'Athlete DOB: {athleteDOB}')
+                        
+                        # Write to CSV
+                        writer.writerow([athleteName])
+                except:
+                    print('No DOB')
+
+        # Result 1
+        #/html/body/app-root/div[5]/app-statistics/div[2]/div[3]/div/div/app-profile-lists/div[7]/table/tbody/tr[1]/td[2]/span
+        #/html/body/app-root/div[5]/app-statistics/div[2]/div[3]/div/div/app-profile-lists/div[7]/table/tbody/tr[1]/td[4]
+
+        # Result 2
+        #/html/body/app-root/div[5]/app-statistics/div[2]/div[3]/div/div/app-profile-lists/div[7]/table/tbody/tr[2]/td[2]/span
+        #/html/body/app-root/div[5]/app-statistics/div[2]/div[3]/div/div/app-profile-lists/div[7]/table/tbody/tr[2]/td[4]
