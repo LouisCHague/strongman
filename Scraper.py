@@ -36,12 +36,20 @@ def search_strongman(name):
     search_box.send_keys(name)
     time.sleep(2)
     search_box.send_keys(Keys.RETURN)
-    time.sleep(3)
-    # Need to open the link to present all records
-    element =driver.find_element(By.XPATH, "//span[text()='+ Show additional strongman records']")
-    # Java click, does not require the element to be in view like Selenium
-    driver.execute_script("arguments[0].click();", element)
-    time.sleep(5)
+    time.sleep(2)
+    # Error for some records, consistently cannot find the '+ Show additional...' element
+    # If unable to find, ignore this entry
+    try:
+        additionalRecords = driver.find_element(By.XPATH, "//span[text()='+ Show additional strongman records']")
+        # Wait until button is clickable
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable(additionalRecords))
+        # Java click, does not require the element to be in view
+        driver.execute_script("arguments[0].click();", additionalRecords)
+        #time.sleep(5)
+    except:
+        print(f'ERROR: COULD NOT OPEN ADDITIONAL RECORDS FOR: {name}\n')
+        return False
+
 
 def scrapePRS():
     '''Scrapes personal best information'''
@@ -52,6 +60,13 @@ def scrapePRS():
     # Dictionary to hold event and weight
     scrapeDict = {}
 
+    # Find Gender 
+    # If this is not an athlete but a team, assign gender = None
+    try:
+        gender = driver.find_element(By.XPATH, '/html/body/app-root/div[5]/app-statistics/div[2]/div[3]/div/div/app-profile-statistics/div[1]/div[2]/div/app-profile-quick-fact/div[1]/div/table/tbody/tr[5]/td[2]')
+    except:
+        gender = None
+
     # Scrape event names
     events = soup.find_all('td', class_='eventName')
     for event in events:
@@ -59,23 +74,215 @@ def scrapePRS():
         scrapeDict[event_name] = None
     #print(scrapeDict)
 
-    # Scrape event record values
+    # Scrape personal record value for each event
     records = soup.find_all('td', class_='record ng-star-inserted')
     count = 0
     for record in records:
-        record_name = record.text.strip()
-        #print(record_name)
-        # Remove - value when value empty
-        if record_name == '-':
-           record_name = pd.NA
-        # Get the event name based on the index
-        #print(scrapeDict)
-        event_name = list(scrapeDict.keys())[count]
-        #print(event_name)
-        scrapeDict[event_name] = record_name 
-        count += 1
+        # Don't go outside of the PR event table
+        if count <= 19:
+            record_name = record.text.strip()
+            #print(record_name)
+            # Remove - value when value empty
+            if record_name == '-':
+                record_name = pd.NA
+            # Get the event name based on the index
+            #print(scrapeDict)
+            #print(count)
+            event_name = list(scrapeDict.keys())[count]
+            #print(event_name)
+            scrapeDict[event_name] = record_name 
+            count += 1
+        else:
+            break
     # print(scrapeDict)
-    return(scrapeDict)
+    return(gender, scrapeDict)
+
+# TEST 1
+#search_strongman("Glenn Ross")
+#scrape_event_records('Glenn Ross')
+
+def MakePRDataframe(name):
+    '''Returns df containing record data for strongman'''
+
+    # Set up Dict containing competitor name to append to recordDict
+    nameDict = {'Name': name}
+    # Search for the strongman on the website
+    failValue = search_strongman(name)
+    # print(f'Fail value: {failValue}')
+
+    # If search failed (Usually a duplicate entry)
+    if failValue != False:
+        # Pull the data from the website
+        gender, recordDict = scrapePRS()
+
+        # If the return value is NOT a team
+        if gender != None:
+            genderDict = {'Gender': gender.text}
+
+            # Add the name and gender values
+            recordDict = dict(genderDict,**recordDict)
+            recordDict = dict(nameDict, **recordDict)
+
+            #print(recordDict)
+            recorddf = pd.DataFrame.from_dict([recordDict])
+            #print(recorddf)
+
+            # Save to CSV
+            # file_name = 'StrongData.csv'
+            # recorddf.to_csv(file_name, index=False)
+            return recorddf
+        else:
+            recorddf = pd.DataFrame()
+            return recorddf
+    else:
+        # ERROR THROWN, return blank dataframe
+        recorddf = pd.DataFrame()
+        return recorddf
+
+# TEST 2
+# Retrieves data for lift records
+# print(strongman_scrape('Glenn Ross'))
+# Retrieves data for podium placement overall and for specific lifts
+# print(scrape_event_podiums('Glenn Ross'))
+
+def PRLiftRecords(strongList,fileName):
+    '''Returns PR value for various lifts'''
+
+    # Dataframe for accumulating information
+    combinedDF = pd.DataFrame(columns=['Name'])
+    for strongman in strongList:
+        #print(strongList)
+        print(strongman)
+        recorddf = MakePRDataframe(strongman)
+        #print(f'Dataframe: {strongman}')
+        #print(recorddf)
+        combinedDF = pd.concat([combinedDF, recorddf], ignore_index=True)
+    #print(combinedDF)
+    # Save to CSV
+    print('\nCSV SAVED!\n')
+    combinedDF.to_csv(fileName, index=False)
+
+# TEST 3
+# Does it make a csv with the name Glenn Ross
+# PRLiftRecords(['Glenn Ross', 'fhbwejhfbwej'], 'test_1.csv')
+
+
+
+
+# Automate Data Scrape
+def process_batches(file_path, batch_size):
+    '''Scrape PR information for list of athletes in batches'''
+
+    df = pd.read_csv(file_path)
+    # REMOVE INDEXING BELOW
+    # df = df[5400:]
+
+    names = df['Name'].tolist()
+    num_batches = len(names) // batch_size + (1 if len(names) % batch_size else 0)
+    
+    for i in range(num_batches):
+        start_idx = i * batch_size
+        #print(start_idx)
+        end_idx = start_idx + batch_size
+        #print(batch_size)
+        batch = names[start_idx:end_idx]
+        #print(batch)
+        
+        PRLiftRecords(batch, f'AutoScrapeNames/PRLiftRecordsAutomated_{start_idx}_{end_idx}.csv')
+
+# Function Call
+process_batches("C:\\Users\\louis\\strongman_project\\athleteNameCleaned.csv", 100)
+
+
+
+
+
+
+
+
+
+
+
+
+# Test 3
+# names = [
+#     "Glenn Ross",
+#     "Mark Felix",
+#     "Luke Stoltman",
+#     "Rauno Heinla",
+#     "Laurence Shahlaei",
+#     "Evan Singleton",
+#     "Trey Mitchell",
+#     "Adam Bishop",
+#     "Rob Kearney",
+#     "Gavin Bilton",
+#     "Kevin Faires",
+#     "Mateusz Kieliszkowski",
+#     "Konstantine Janashia",
+#     "Iron Biby",
+#     "Bobby Thompson",
+#     "Svend Karlsen",
+#     "Mariusz Pudzianowski",
+#     "Vasyl Virastyuk",
+#     "Phil Pfister",
+#     "Žydrūnas Savickas",
+#     "Brian Shaw",
+#     "Eddie Hall",
+#     "Hafthór Júlíus Björnsson",
+#     "Martins Licis",
+#     "Oleksii Novikov",
+#     "Tom Stoltman",
+#     "Mitchell Hooper"
+# ]
+
+#names = []
+
+# BATCH 1
+# "Pavlo Kordiyaka", "Tom Stoltman", "Bobby Thompson", "Konstantine Janashia", "Pa O'Dwyer", 
+#     "Eddie Williams", "Oleksii Novikov", "Luke Stoltman", "Gavin Bilton", "Thomas Evans", 
+#     "Kristján Jón Haraldsson", "Fadi El Masri", "Mitchell Hooper", "Mathew Ragg", "Aivars Šmaukstelis", 
+#     "Mateusz Kieliszkowski", "Graham Hicks", "Spenser Remick", "Jaco Schoonwinkel", "Brian Shaw", 
+#     "Rauno Heinla", "Adam Bishop", "Kevin Faires", "Gabriel Rhéaume", "Trey Mitchell", "Evan Singleton", 
+#     "Eyþór Ingólfsson Melsteð"
+# BATCH 2
+# "Mark Felix", "Paul Smith", "Travis Ortmayer", "Jean-François Caron", 
+#     "Martin Forsmark", "Robert Oberst", "Mateusz Baron", "Hafþór Júlíus Björnsson", "Dimitar Savatinov", 
+#     "Rafal Kobylarz", "Josh Thigpen", "Akos Nagy", "Žydrūnas Savickas", "Mikhail Shivlyakov", 
+#     "Nick Best", "David Nystrom", "Benedikt Magnússon", "Laurence Shahlaei", "Jerry Pritchett", 
+#     "Dainis Zageris", "Krzysztof Radzikowski", "Gerhard Van Staden", "Mike Burke"
+# BATCH 3
+#     "Eddie Hall", "Matjaž Belšak", "Grzegorz Szymanski", "Mike Caruso", "Ole Martin Hansen", 
+#     "Luke Richardson", "Iron Biby", "Svend Karlsen", "Mariusz Pudzianowski", "Vasyl Virastyuk", 
+#     "Phil Pfister", "Martins Licis", "Glenn Ross", "Rob Kearney","Mikhail Koklyaev", "Robert Frampton",
+#     "Jarek Dymek"
+
+# Pull Data
+# Use the functions individually
+# Need to add error correction when there are issues with HTML 'Show more...'
+
+#PRLiftRecords(names)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def scrapePodium(athleteName):
     '''Scrapes athlete information and podium information from the page'''
@@ -165,139 +372,5 @@ def scrapePodium(athleteName):
 
     return podiumDF, liftPodiumDf
 
-# TEST 1
-#search_strongman("Glenn Ross")
-#scrape_event_records('Glenn Ross')
-#scrape_event_podiums('Glenn Ross')
-
-def MakePRDataframe(name):
-    '''Returns df containing record data for strongman'''
-
-    # Set up Dict containing competitor name to append to recordDict
-    nameDict = {'Name': name}
-    # Search for the strongman on the website
-    search_strongman(name)
-
-    # Pull the data from the website
-    recordDict = scrapePRS()
-    recordDict = dict(nameDict, **recordDict)
-    #print(recordDict)
-    recorddf = pd.DataFrame.from_dict([recordDict])
-    #print(recorddf)
-
-    # Save to CSV
-    # file_name = 'StrongData.csv'
-    # recorddf.to_csv(file_name, index=False)
-
-    return recorddf
-
-# TEST 2
-# Retrieves data for lift records
-# print(strongman_scrape('Glenn Ross'))
-# Retrieves data for podium placement overall and for specific lifts
-# print(scrape_event_podiums('Glenn Ross'))
-
-
-
-def PRLiftRecords(strongList):
-    '''Returns PR value for various lifts'''
-
-    # Dataframe for accumulating information
-    combinedDF = pd.DataFrame(columns=['Name'])
-    for strongman in strongList:
-        print(strongman)
-        recorddf = MakePRDataframe(strongman)
-        combinedDF = pd.concat([combinedDF, recorddf], ignore_index=True)
-    #print(combinedDF)
-    # Save to CSV
-    file_name = 'PRLiftRecords_4.csv'
-    combinedDF.to_csv(file_name, index=False)
-
-def OverallPodium(strongList):
-    '''Returns placement for complete competitions'''
-
-    # Dataframe for accumulating information
-    combinedDF = pd.DataFrame(columns=['Athlete'])
-    for strongman in strongList:
-        search_strongman(strongman)
-        recorddf, seconddf = scrapePodium(strongman)
-        combinedDF = pd.concat([combinedDF, recorddf], ignore_index=True)
-    print(combinedDF)
-    # Save to CSV
-    file_name = 'OverallPodium.csv'
-    combinedDF.to_csv(file_name, index=False)
-
-def EventPodium(strongList):
-    '''Returns podium placement for all events'''
-
-    # Dataframe for accumulating information
-    combinedDF = pd.DataFrame(columns=['Athlete'])
-    for strongman in strongList:
-        search_strongman(strongman)
-        # Returns two dataframes, we only need one
-        recorddf, seconddf = scrapePodium(strongman)
-        combinedDF = pd.concat([combinedDF, seconddf], ignore_index=True)
-    # print(combinedDF)
-    # Save to CSV
-    file_name = 'EventPodium.csv'
-    combinedDF.to_csv(file_name, index=False)
-
-# Test 3
-# names = [
-#     "Glenn Ross",
-#     "Mark Felix",
-#     "Luke Stoltman",
-#     "Rauno Heinla",
-#     "Laurence Shahlaei",
-#     "Evan Singleton",
-#     "Trey Mitchell",
-#     "Adam Bishop",
-#     "Rob Kearney",
-#     "Gavin Bilton",
-#     "Kevin Faires",
-#     "Mateusz Kieliszkowski",
-#     "Konstantine Janashia",
-#     "Iron Biby",
-#     "Bobby Thompson",
-#     "Svend Karlsen",
-#     "Mariusz Pudzianowski",
-#     "Vasyl Virastyuk",
-#     "Phil Pfister",
-#     "Žydrūnas Savickas",
-#     "Brian Shaw",
-#     "Eddie Hall",
-#     "Hafthór Júlíus Björnsson",
-#     "Martins Licis",
-#     "Oleksii Novikov",
-#     "Tom Stoltman",
-#     "Mitchell Hooper"
-# ]
-
-names = []
-
-# BATCH 1
-# "Pavlo Kordiyaka", "Tom Stoltman", "Bobby Thompson", "Konstantine Janashia", "Pa O'Dwyer", 
-#     "Eddie Williams", "Oleksii Novikov", "Luke Stoltman", "Gavin Bilton", "Thomas Evans", 
-#     "Kristján Jón Haraldsson", "Fadi El Masri", "Mitchell Hooper", "Mathew Ragg", "Aivars Šmaukstelis", 
-#     "Mateusz Kieliszkowski", "Graham Hicks", "Spenser Remick", "Jaco Schoonwinkel", "Brian Shaw", 
-#     "Rauno Heinla", "Adam Bishop", "Kevin Faires", "Gabriel Rhéaume", "Trey Mitchell", "Evan Singleton", 
-#     "Eyþór Ingólfsson Melsteð"
-# BATCH 2
-# "Mark Felix", "Paul Smith", "Travis Ortmayer", "Jean-François Caron", 
-#     "Martin Forsmark", "Robert Oberst", "Mateusz Baron", "Hafþór Júlíus Björnsson", "Dimitar Savatinov", 
-#     "Rafal Kobylarz", "Josh Thigpen", "Akos Nagy", "Žydrūnas Savickas", "Mikhail Shivlyakov", 
-#     "Nick Best", "David Nystrom", "Benedikt Magnússon", "Laurence Shahlaei", "Jerry Pritchett", 
-#     "Dainis Zageris", "Krzysztof Radzikowski", "Gerhard Van Staden", "Mike Burke"
-# BATCH 3
-#     "Eddie Hall", "Matjaž Belšak", "Grzegorz Szymanski", "Mike Caruso", "Ole Martin Hansen", 
-#     "Luke Richardson", "Iron Biby", "Svend Karlsen", "Mariusz Pudzianowski", "Vasyl Virastyuk", 
-#     "Phil Pfister", "Martins Licis", "Glenn Ross", "Rob Kearney","Mikhail Koklyaev", "Robert Frampton",
-#     "Jarek Dymek"
-
-# Pull Data
-# Use the functions individually
-# Need to add error correction when there are issues with HTML 'Show more...'
-
-PRLiftRecords(names)
 #OverallPodium(names)
 #EventPodium(names)

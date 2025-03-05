@@ -1,36 +1,50 @@
-# Louis Hague, 21/02/2025
+# Louis Hague, 05/03/2025
 
 '''
-The function of this file is to clean the scraped data
+The function of this file is to combine all the CSVs into a single file and clean the scraped data
 '''
 
 # Imports
+import os
 import pandas as pd
 
-# Some of the records from PRLift Records are multiple reps, in comparison to 1RM
-# Different formulas to calculate one rep max
-# Brzycki formula: Weight × (36 / (37 – number of reps))
-# Epley formula: Weight × (1 + (0.0333 × number of reps))
-# Lombardi formula: Weight × (number of reps ^ 0.1)
-# O’Conner formula: Weight × (1 + (0.025 × number of reps))
+# Folder containing the CSV files
+filePath = "C:\\Users\\louis\\strongman_project\\AutoScrapeNames"
 
-# Events with multiple reps
-eventNames = ["Apollon's Axle Press", "Atlas Stone", "Log Lift", "Dumbbell", "Squat (suited)", "Deadlift (raw)",
-              "Hummer Tire Deadlift (raw)", "Deadlift (suited)", '18" Deadlift (raw or suited)',	
-              "Silver Dollar Deadlift (raw or suited)",	"Squat (raw)", "Overhead press",
-              "Deadlift for Reps (raw)", "Log Lift for Reps",	"Viking Press",	"Apollon's Axle Double Overhand",
-              "Rolling Thunder",	"Hilt/Grandfather Clock",	'Rolling Raptor 2"', 'Saxon Bar 3" (75mm) for Max',
-              "Deadlift for Reps (suited)",	"Apollon's Axle Press for Reps", "Dumbbell for Reps",
-              "Squat for Reps (suited)"]
-#"Viking Press for Reps",
+# Store DataFrames
+dfList = []
 
-#eventNames = eventNames = ["Apollon's Axle Press"]
+# Combine CSVs
+for file in os.listdir(filePath):
+    file_path = os.path.join(filePath, file)
+    df = pd.read_csv(file_path)
+    dfList.append(df)
 
-df = pd.read_csv("C:\\Users\\louis\\strongman_project\\PRLiftRecords_complete.csv")
-print(df)
+completeDF = pd.concat(dfList, ignore_index=True, sort=False)
+print(completeDF)
+
+# Remove athletes with NaN values for all exercises 
+completeDF = completeDF.dropna(subset=completeDF.columns[2:], how='all')
+# print(completeDF.iloc[0])
+
+# # Some of the records from PRLift Records are multiple reps, in comparison to 1RM
+# # Different formulas to calculate one rep max
+# # Brzycki formula: Weight × (36 / (37 – number of reps))
+# # Epley formula: Weight × (1 + (0.0333 × number of reps))
+# # Lombardi formula: Weight × (number of reps ^ 0.1)
+# # O’Conner formula: Weight × (1 + (0.025 × number of reps))
+
+# Events
+eventNames = ["Apollon's Axle Press", 'Atlas Stone', 'Deadlift (suited)', 'Log Lift',
+              'Dumbbell', 'Squat (suited)', '18" Deadlift (raw or suited)', 'Silver Dollar Deadlift (raw or suited)',
+              'Deadlift (raw)', 'Squat (raw)', 'Overhead press', 'Hummer Tire Deadlift (raw)', 'Viking Press',
+              "Apollon's Axle Double Overhand", 'Rolling Thunder', 'Hilt/Grandfather Clock', 'Rolling Raptor 2"',
+              'Saxon Bar 3" (75mm) for Max', "Farmer's Walk for Distance", "Farmer's Hold", 'Log Lift for Reps',
+              'Deadlift for Reps (raw)', 'Deadlift for Reps (suited)', 'Dumbbell for Reps', "Apollon's Axle Press for Reps",
+              'Viking Press for Reps', 'Squat for Reps (raw)', 'Squat for Reps (suited)']
 
 for event in eventNames:
-    for index, row in df.iterrows():
+    for index, row in completeDF.iterrows():
         weightValue = row[f'{event}']
         # Need to ignore the NaN values
         if isinstance(weightValue, str) and '/' in weightValue:
@@ -52,10 +66,7 @@ for event in eventNames:
                 OneRM = weightKG.strip()
 
             # Override the value
-            df.at[index, f'{event}'] = OneRM
+            completeDF.at[index, f'{event}'] = OneRM
 
-# After the loop, save the DataFrame to a new CSV file (or overwrite the existing one)
-df.to_csv("C:\\Users\\louis\\strongman_project\\PRLiftRecordsCompleteCleaned.csv", index=False)
-
-# Optionally, you can also print the updated DataFrame to confirm changes
-#print(df)
+# print(completeDF)
+completeDF.to_csv("C:\\Users\\louis\\strongman_project\\CompleteScrapeCleaned.csv", index=False)

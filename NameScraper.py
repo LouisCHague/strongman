@@ -2,7 +2,12 @@
 # 26/02/2025
 
 '''The function of the file is to scrape the names of strongmen into an excel file so we aren't relying on 
-my knowledge of strongman for the sample size/increase the sample size'''
+my knowledge of strongman for the sample size/increase the sample size
+
+WARNING:
+WHEN YOU RUN THE PROGRAM MAKE SURE TO LOOK AT THE OPENED WINDOW UNTIL IT FINDS THE FIRST
+COUNTRY FROM THE DROPDOWN OR AN ERROR WILL BE THROWN. UNSURE OF ORIGIN.
+'''
 
 # Imports
 from selenium import webdriver
