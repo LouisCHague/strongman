@@ -10,7 +10,7 @@ The following steps were used to obtain and clean the data:
    The first step was to scrape the names and birthdates of strong-athletes from the website, assuming that athletes listed with birthdates are more likely to have recorded maximum lifts available.
   
 2. **Cleaning Names Data (`CleanNameData.py`)**  
-   This script was used to remove any non-athlete entries, such as teams, from the list of scraped strongman names.
+   This script was used to remove any non-athlete entries, such as teams, from the list of scraped athlete names.
 
 3. **Scraping Maximum Lifts (`Scraper.py`)**  
    Using Selenium, the script visited each athlete's profile page on StrengthResults.com. It searched for and scraped the maximum recorded lifts in various competition exercises for each athlete. The data was then saved in batches of 100 athletes per CSV file for easier handling.
