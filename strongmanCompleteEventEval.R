@@ -13,6 +13,9 @@ library(cluster)
 #install.packages('janitor')
 library(janitor)
 
+# Remove items
+rm()
+
 # Set seed
 set.seed(42)
 
@@ -121,9 +124,6 @@ perform_clustering <- function(data, gender_filter = "All", focus = "All") {
   # Set seed
   set.seed(42)
   
-  # Imports
-  library(dplyr)
-  library(ggplot2)
   
   # Filter Gender
   if (gender_filter == "Male") {
@@ -179,7 +179,9 @@ perform_clustering <- function(data, gender_filter = "All", focus = "All") {
   
   # PCA
   plot <- ggplot(pca_data, aes(x = PC1, y = PC2, color = cluster)) +
+    geom_point(size = 2, alpha = 0.8) +
     geom_text(aes(label = Name), vjust = 1, hjust = 1, size = 2.5) +
+    scale_color_manual(values = c("purple3", "orange3")) +
     labs(title = paste("PCA of Strongman Clusters (", focus, ", ", gender_filter, ")", sep = ""),
          x = "PC1", y = "PC2") +
     theme_minimal()
