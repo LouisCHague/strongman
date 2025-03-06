@@ -22,4 +22,6 @@ The following steps were used to obtain and clean the data:
      - Estimating the one-rep max (1RM) for events that had multiple repetitions.
      - Removing the pounds (lbs) measurement from the records to standardise the units.
   
+## Results
+  
 ![My Image](Images/strongmanClust.png)
