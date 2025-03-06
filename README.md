@@ -1,4 +1,4 @@
-# Strongman Athletes Data Scraper
+# Strongman Athlete Project
 
 This repository contains the code and process used to scrape, clean, and extract data for strongman athletes, including their maximum lifts in a variety of competition exercises. The data was collected from [StrengthResults.com](https://strengthresults.com/statistics/profiles/cdcf-bbb4-4d7f-9306-26a3137e212e), focusing on extracting maximum recorded lifts for exercises of individual athletes. After filtering out teams and incomplete data, the final dataset contains records for 5,558 strongman competitors.
 
