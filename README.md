@@ -1,13 +1,13 @@
-# Strength Trends in World's Strongest Man: Data-Driven Insights & Athlete Profiling
+# World's Strongest Man and World's Strongest Woman: Strength Trends & Athlete Profiling 
 
-This repository contains the code and process used to scrape, clean, and extract data for strongman athletes, including their maximum lifts in a variety of competition exercises. The data was collected from [StrengthResults.com](https://strengthresults.com/statistics/profiles/cdcf-bbb4-4d7f-9306-26a3137e212e), focusing on extracting maximum recorded lifts for exercises of individual athletes. After filtering out teams and incomplete data, the final dataset contains records for 5,557 strongman competitors.
+This repository contains the code and process used to scrape, clean, and extract data for strong-athletes, including their maximum lifts in a variety of competition exercises. The data was collected from [StrengthResults.com](https://strengthresults.com/statistics/profiles/cdcf-bbb4-4d7f-9306-26a3137e212e), focusing on extracting maximum recorded lifts for exercises of individual athletes. After filtering out teams and incomplete data, the final dataset contains records for 5,557 strongman competitors.
 
 ## Workflow Overview
 
 The following steps were used to obtain and clean the data:
 
 1. **Scraping Names and Birthdates (`NameScraper.py`)**  
-   The first step was to scrape the names and birthdates of strongman athletes from the website, assuming that athletes listed with birthdates are more likely to have recorded maximum lifts available.
+   The first step was to scrape the names and birthdates of strong-athletes from the website, assuming that athletes listed with birthdates are more likely to have recorded maximum lifts available.
   
 2. **Cleaning Names Data (`CleanNameData.py`)**  
    This script was used to remove any non-athlete entries, such as teams, from the list of scraped strongman names.
@@ -21,6 +21,12 @@ The following steps were used to obtain and clean the data:
      - Removing athletes who did not have any recorded lifts in any exercises.
      - Estimating the one-rep max (1RM) for events that had multiple repetitions.
      - Removing the pounds (lbs) measurement from the records to standardise the units.
+
+5. **Identify trends, relationships, and groups between WSM & WSW athletes (`strongmanCompleteEventEval.R`)**
+   Processes and analyzes strong-athlete data by:
+   - Standardises units, removes unreliable data, and filters athletes with sufficient lifts.
+   - Visualises relationship between different one-rep max lifts.
+   - Groups athletes by one-rep max performance using K-means and PCA.
   
 ## Results
   
