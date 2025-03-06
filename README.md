@@ -21,3 +21,5 @@ The following steps were used to obtain and clean the data:
      - Removing athletes who did not have any recorded lifts in any exercises.
      - Estimating the one-rep max (1RM) for events that had multiple repetitions.
      - Removing the pounds (lbs) measurement from the records to standardise the units.
+  
+![My Image](Images/strongmanClust.png)
