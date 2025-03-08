@@ -29,5 +29,20 @@ The following steps were used to obtain and clean the data:
    - Groups athletes by one-rep max performance using K-means and PCA.
   
 ## Results
+
+### Lift Correlation Analysis
+A correlation heatmap revealed strong relationships (≥0.8) between most strongathlete one-rep max lifts lifts. Notably:
+
+Pressing Movements: Log Lift and Apollon’s Axle Press showed high correlation (0.93-0.95), indicating transferable strength.
+
+Deadlift & Log Lift: Deadlift (Raw/Suited) correlated strongly with the Log Lift (0.88-0.89), suggesting significant posterior chain involvement beyond upper-body strength.
+Clustering Analysis
+
+### Strongathlete 1RM lifts Clustering:
+
+Overall Strength Clusters: Top-tier strongmen (e.g., Hafthor Björnsson, Tom Stoltman) grouped closely, reflecting elite strength trends.
+Deadlift Specialists: High deadlift performers like Eddie Hall and Rauno Heinla formed distinct clusters, with projections for future record-breakers.
+Pressing Strength: Zydrunas Savickas ("Big Z") stood apart as the strongest presser, while specialists like Luke Stoltman and Rob Kearney clustered nearby.
+Strongwoman Clusters: Despite a smaller dataset (N=73), past WSW champions (e.g., Andrea Thompson, Donna Moore) formed a distinct grouping, with emerging athletes positioned for future success.
   
-![My Image](Images/strongmanClust.png)
+![My Image](Images/CorPlot.png)
