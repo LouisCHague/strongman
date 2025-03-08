@@ -39,9 +39,10 @@ eventNames = ["Apollon's Axle Press", 'Atlas Stone', 'Deadlift (suited)', 'Log L
               'Dumbbell', 'Squat (suited)', '18" Deadlift (raw or suited)', 'Silver Dollar Deadlift (raw or suited)',
               'Deadlift (raw)', 'Squat (raw)', 'Overhead press', 'Hummer Tire Deadlift (raw)', 'Viking Press',
               "Apollon's Axle Double Overhand", 'Rolling Thunder', 'Hilt/Grandfather Clock', 'Rolling Raptor 2"',
-              'Saxon Bar 3" (75mm) for Max', "Farmer's Walk for Distance", "Farmer's Hold", 'Log Lift for Reps',
+              'Saxon Bar 3" (75mm) for Max', 'Log Lift for Reps', "Farmer's Walk for Distance", "Farmer's Hold", 
               'Deadlift for Reps (raw)', 'Deadlift for Reps (suited)', 'Dumbbell for Reps', "Apollon's Axle Press for Reps",
               'Viking Press for Reps', 'Squat for Reps (raw)', 'Squat for Reps (suited)']
+
 
 for event in eventNames:
     for index, row in completeDF.iterrows():

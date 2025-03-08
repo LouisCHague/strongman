@@ -139,11 +139,12 @@ perform_clustering <- function(data, gender_filter = "All", focus = "All") {
   data_numeric <- data[, -c(1, 2)]
   
   # Focus on lift
-  if (focus == "deadlift") {
+  if (focus == "Deadlift") {
     data_numeric <- data_numeric[, grep("deadlift", colnames(data_numeric))]
-  } else if (focus == "press") {
+  } else if (focus == "Press") {
     data_numeric <- data_numeric[, grep("log|dumbbell|press", colnames(data_numeric))]
   }
+  # print(data_numeric)
   
   # Assuming 'CompleteScrapeCleaned_numeric' is your data frame
   #non_na_counts <- colSums(!is.na(CompleteScrapeCleaned_numeric))
@@ -167,18 +168,21 @@ perform_clustering <- function(data, gender_filter = "All", focus = "All") {
   
   # Perform PCA
   pca <- prcomp(scaled_data)
+  # print(pca$rotation)
   pca_data <- data.frame(pca$x, cluster = data_imputed$cluster, 
                          Gender = data_imputed$gender, Name = data_imputed$name)
   
   # If Deadlift focus, classify high deadlift vs lower deadlift
-  if (focus == "Deadlift" && "deadlift_suited" %in% colnames(data_imputed)) {
+  if (focus == "Deadlift") {
     data_imputed$high_deadlift <- ifelse(data_imputed$deadlift_suited > 430, 
                                          ">430kg Deadlift", "<430kg Deadlift")
+    
+    # high_deadlift as factor
+    data_imputed$high_deadlift <- as.factor(data_imputed$high_deadlift)
     pca_data$high_deadlift <- data_imputed$high_deadlift
-  }
   
-  # PCA
-  plot <- ggplot(pca_data, aes(x = PC1, y = PC2, color = cluster)) +
+  # Deadlift Cluster Plot
+  plot <- ggplot(pca_data, aes(x = PC1, y = PC2, color = cluster, shape = high_deadlift)) +
     geom_point(size = 2, alpha = 0.8) +
     geom_text(aes(label = Name), vjust = 1, hjust = 1, size = 2.5) +
     scale_color_manual(values = c("purple3", "orange3")) +
@@ -186,26 +190,32 @@ perform_clustering <- function(data, gender_filter = "All", focus = "All") {
          x = "PC1", y = "PC2") +
     theme_minimal()
   
-  # Add Deadlift, shape by deadlift
-  if (focus == "Deadlift" && "high_deadlift" %in% colnames(pca_data)) {
-    plot <- plot + geom_point(aes(shape = high_deadlift)) 
+  }
+  
+  else {
+    # Basic Cluster Plot
+    plot <- ggplot(pca_data, aes(x = PC1, y = PC2, color = cluster)) +
+      geom_point(size = 2, alpha = 0.8) +
+      geom_text(aes(label = Name), vjust = 1, hjust = 1, size = 2.5) +
+      scale_color_manual(values = c("purple3", "orange3")) +
+      labs(title = paste("PCA of Strongman Clusters (", focus, ", ", gender_filter, ")", sep = ""),
+           x = "PC1", y = "PC2") +
+      theme_minimal()
   }
   
   print(plot)
 }
 
 # Function Call
-perform_clustering(TopAthletes, gender_filter = "Male")
+perform_clustering(TopAthletes, gender_filter = "Male", focus = "Press")
 
 # Number of Athletes
-#TopAthletes[TopAthletes$Gender == 'Female',]
-#TopAthletes[TopAthletes$Gender == 'Male',]
+#TopAthletes[TopAthletes$gender == 'Female',]
+# TopAthletes[TopAthletes$gender == 'Male',]
 
 # Athlete Search
+#view(TopAthletes[TopAthletes$name %in% c("Zydrunas Savickas", "Mitchell Hooper", "Eddie Hall", "Brian Shaw", "Tom Stoltman"), ])
+
 #pressData <- TopAthletes[, grep("press|log|dumbbell", colnames(TopAthletes))]
 #pressData <- cbind(metadata, pressData)
-#view(pressData[pressData$name %in% c("Eddie Hall"), ])
-
-
-
-
+#view(pressData[pressData$name %in% c("Tom Stoltman","Luke Stoltman", "Rob Kearney", "Evan Singleton", "Zydrunas Savickas", "Eddie Hall" ,"Brian Shaw", "Mitchell Hooper", "Oleksii Novikov"), ])
