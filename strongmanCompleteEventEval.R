@@ -9,6 +9,8 @@ library(mice)
 library(dplyr)
 library(readr)
 library(tibble)
+library(randomForest)
+library(caret)
 library(cluster)
 #install.packages('janitor')
 library(janitor)
@@ -112,11 +114,83 @@ sorted_cor <- meltcorMatrix_abs[order(-meltcorMatrix_abs$value), ]
 top_correlations <- head(sorted_cor, 90)
 top_correlations
 
+##########################################################################
+# Can we predict log-lift one rep max based on suited deadlift one rep max
+##########################################################################
+#cor(TopAthletes$deadlift_suited, TopAthletes$log_lift, use="complete.obs")
+
+# Scatter plot with reg line
+#ggplot(TopAthletes, aes(x = deadlift_suited, y = log_lift)) +
+#  geom_point(color = "purple3", alpha = 0.6) +
+#  geom_smooth(method = "lm", col = "orange1") +
+#  labs(title = "Suited Deadlift vs Log Lift", x = "Suited Deadlift (kg)", y = "Log Lift (kg)") +
+#  theme_grey()
+
+# Fit a linear reg. model
+model <- lm(deadlift_suited ~ log_lift, data = TopAthletes)
+
+# Model summary
+summary(model)
+par(mfrow=c(2,2))
+plot(model)
+
+########
+# Issues 
+########
+
+# High Correlation Between Movements
+# Strongman athletes don’t typically train lifts in isolation.
+# A model that predicts log lift purely from other lifts without 
+# accounting for training overlap might miss nuances that explain performance differences.
+
+#####################
+# Random Forest Model
+# To deal with the correlation between lifts
+#####################
+
+# Importance of Features
+importance_rf <- randomForest(log_lift ~ ., data = CompleteScrapeCleaned_numeric, na.action = na.omit)
+varImpPlot(importance_rf)
+
+# Random Forest Model
+selected_data <- CompleteScrapeCleaned_numeric[, c("log_lift", "apollons_axle_press", "dumbbell", "log_lift_for_reps")]
+selected_features <- selected_data[,-1]
+selected_label <- selected_data[,1]
+# Impute Features
+selected_features <- mice(selected_features, method = 'pmm')
+selected_features <- complete(selected_features)
+# Combine data
+selected_data <- cbind(selected_label, selected_features)
+dim(selected_data)
+# Remove columns with NaN values
+selected_data <- na.omit(selected_data)
+dim(selected_data)
+
+# Fit random forest model using the combined data
+randomForest(log_lift ~ ., data = selected_data, na.action = na.omit)
+
+###############################
+# Optimised Random Forest Model
+###############################
+
+tuned_mtry <- tuneRF(selected_data[, -which(names(selected_data) == "log_lift")],
+                     selected_data$log_lift, 
+                     stepFactor = 1.5, 
+                     improve = 0.01, 
+                     trace = TRUE)
+
+# 10-fold cross-validation
+train_control <- trainControl(method = "cv", number = 10) 
+rf_model <- train(log_lift ~ ., data = selected_data, 
+                  method = "rf", 
+                  trControl = train_control, 
+                  tuneGrid = expand.grid(mtry = tuned_mtry[, 1])) 
+
+print(rf_model)
 
 ##################
 # Cluster Athletes 
 ##################
-
 
 # Function to cluster athletes
 perform_clustering <- function(data, gender_filter = "All", focus = "All") {
@@ -214,7 +288,7 @@ perform_clustering(TopAthletes, gender_filter = "Male", focus = "Press")
 # TopAthletes[TopAthletes$gender == 'Male',]
 
 # Athlete Search
-#view(TopAthletes[TopAthletes$name %in% c("Zydrunas Savickas", "Mitchell Hooper", "Eddie Hall", "Brian Shaw", "Tom Stoltman"), ])
+#view(TopAthletes[TopAthletes$name %in% c("Vytautas Lalas", "Mitchell Hooper"), ])
 
 #pressData <- TopAthletes[, grep("press|log|dumbbell", colnames(TopAthletes))]
 #pressData <- cbind(metadata, pressData)
