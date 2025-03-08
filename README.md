@@ -35,10 +35,10 @@ A correlation heatmap revealed strong relationships (≥0.8) between most strong
 - Pressing Movements: Log Lift and Apollon’s Axle Press showed high correlation (0.93-0.95), indicating transferable strength.
 - Deadlift & Log Lift: Deadlift (Raw/Suited) correlated strongly with the Log Lift (0.88-0.89), suggesting significant posterior chain involvement beyond upper-body strength.
 
+![My Image](Images/CorPlot.png)
+
 ### Clustering Analysis
 - Overall Strength Clusters: Top-tier strongmen (e.g., Hafthor Björnsson, Tom Stoltman) grouped closely, reflecting elite strength trends.
 - Deadlift Specialists: High deadlift performers like Eddie Hall and Rauno Heinla formed distinct clusters, with projections for future record-breakers.
 - Pressing Strength: Zydrunas Savickas ("Big Z") stood apart as the strongest presser, while specialists like Luke Stoltman and Rob Kearney clustered nearby.
 - Strongwoman Clusters: Despite a smaller dataset (N=73), past WSW champions (e.g., Andrea Thompson, Donna Moore) formed a distinct grouping, with emerging athletes positioned for future success.
-  
-![My Image](Images/CorPlot.png)
