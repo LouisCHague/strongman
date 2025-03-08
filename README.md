@@ -39,8 +39,17 @@ A correlation heatmap revealed strong relationships (≥0.8) between most strong
 ### Clustering Analysis
 - Overall Strength Clusters: Top-tier strongmen (e.g., Hafthor Björnsson, Tom Stoltman) grouped closely, reflecting elite strength trends.
 - Mariusz Pudzianowski & Generational Strength Trends: Pudzianowski's dominance (5× WSM champion) is notable. However, the evolving depth of competition and modern training advancements introduce questions about whether his dominance could have been sustained in today’s field of elite strongmen.
-- Deadlift Specialists: High deadlift performers like Eddie Hall and Rauno Heinla formed distinct clusters, with projections for future record-breakers.
-- Pressing Strength: Zydrunas Savickas ("Big Z") stood apart as the strongest presser, while specialists like Luke Stoltman and Rob Kearney clustered nearby.
-- Strongwoman Clusters: Despite a smaller dataset (N=73), past WSW champions (e.g., Andrea Thompson, Donna Moore) formed a distinct grouping, with emerging athletes positioned for future success.
 
 ![My Image](Images/strongmancompletecluster.png)
+
+- Deadlift Specialists: High deadlift performers like Eddie Hall and Rauno Heinla formed distinct clusters, with projections for future record-breakers.
+
+![My Image](Images/strongmandeadliftcluster.png)
+  
+- Pressing Strength: Zydrunas Savickas ("Big Z") stood apart as the strongest presser, while specialists like Luke Stoltman and Rob Kearney clustered nearby.
+
+![My Image](Images/strongmanpresscluster.png)
+
+- Strongwoman Clusters: Despite a smaller dataset (N=73), past WSW champions (e.g., Andrea Thompson, Donna Moore) formed a distinct grouping, with emerging athletes positioned for future success.
+
+![My Image](Images/strongwomancompletecluster.png)
