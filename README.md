@@ -28,7 +28,8 @@ The following steps were used to obtain and clean the data:
    - Groups athletes by one-rep max performance using K-means and PCA.
   
 ## Sample
-The dataset was refined to only include athletes with robust strength profiles, resulting in a more streamlined set of 425 athletes from an initial 5,557. The exercises remaining included Apollon's Axle Press, Atlas Stone, Deadlift (suited), Log Lift, Dumbbell, Silver Dollar Deadlift, 18inch Deadlift, Deadlift (raw), Overhead press, Viking Press, Log Lift for Reps, Deadlift for Reps (raw), Apollon's Axle Press for Reps.
+The dataset was refined to only include athletes with robust strength profiles, resulting in a more streamlined set of 425 athletes from an initial 5,557. The exercises remaining included Apollon's Axle Press, Atlas Stone, Deadlift (suited), Log Lift, Dumbbell, Silver Dollar Deadlift, 18inch Deadlift, Deadlift (raw), Overhead press, Viking Press, Log Lift for Reps, Deadlift for Reps (raw), Apollon's Axle Press for Reps. 
+Access this data: https://www.kaggle.com/datasets/louishague/strongman-and-strongwoman-lift-data
   
 ## Results and Discussion
 
