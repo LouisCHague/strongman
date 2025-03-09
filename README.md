@@ -36,6 +36,16 @@ A correlation heatmap revealed strong relationships (≥0.8) between most strong
 
 ![My Image](Images/CorPlot.png)
 
+### Log-Lift Performance Model
+A Random Forest model was developed to predict Log Lift 1RM using key strength indicators (Apollon’s Axle Press, Dumbbell Press, Log Lift for Reps):
+- Model R² = 90.89%, indicating a strong predictive capability.
+- Root Mean Squared Error (RMSE) = 12kg, suggesting limitations due to missing biomechanical and training-related variables.
+- Deadlift strength (Suited/Raw) ranked among the most significant predictors, reinforcing the importance of posterior chain development in pressing performance.
+#### Limitations
+- The model lacks longitudinal data (training history, recovery, nutrition), which may improve predictive accuracy.
+- Correlations do not imply causation: While deadlift strength and log lift performance are highly correlated, further longitudinal studies are required to determine causal relationships.
+- Variability in technique: Different pressing styles (Strict Press vs Split-Jerk) require distinct neuromuscular activation, which may impact predictive modeling accuracy.
+
 ### Clustering Analysis
 - Overall Strength Clusters: Top-tier strongmen (e.g., Hafthor Björnsson, Tom Stoltman) grouped closely, reflecting elite strength trends.
 - Mariusz Pudzianowski & Generational Strength Trends: Pudzianowski's dominance (5× WSM champion) is notable. However, the evolving depth of competition and modern training advancements introduce questions about whether his dominance could have been sustained in today’s field of elite strongmen.
@@ -53,3 +63,13 @@ A correlation heatmap revealed strong relationships (≥0.8) between most strong
 - Strongwoman Clusters: Despite a smaller dataset (N=73), past WSW champions (e.g., Andrea Thompson, Donna Moore) formed a distinct grouping, with emerging athletes positioned for future success.
 
 ![My Image](Images/strongwomancompletecluster.png)
+
+### Project Limitations
+- This project highlighted the importance of thoroughly considering the potential uses and limitations of data before beginning the collection process. In hindsight, I should have more carefully evaluated how the data could be leveraged to draw meaningful conclusions. Whilst this project was an enjoyable experience, and I learned Selenium for web scraping, a more thoughtful and strategic approach to data collection at the outset would have helped in aligning the project goals with the available data
+
+### Conclusion 
+This analysis challenges the binary classification of strongman athletes (static vs. mobile lifters) by revealing nuanced strength profiles. Key takeaways:
+- Elite strongman competitors exhibit distinct lifting trends, with specialisation playing a major role in competition success.
+- Deadlift strength may influence pressing performance, particularly in Log and Axle Lift development.
+- Strongwoman data requires expansion to fully understand performance clustering and emerging trends.
+- This project lays the groundwork for future strength analysis research, emphasizing the need for longitudinal tracking and biomechanical integration for improved strongman performance modeling.
